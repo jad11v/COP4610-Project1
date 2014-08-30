@@ -66,7 +66,15 @@ void handleCommand(Args* response)
 {
 	if (strcmp(response->argv[0], "exit") == 0)
 	{
-		exit(55);
+		if (response->argv[1] != NULL)
+		{
+			int exit_value = atoi(response->argv[1]);
+			exit(exit_value);
+		}
+		else
+		{
+			exit(0);
+		}
 	}
 	else if (strcmp(response->argv[0], "cd") == 0)
 	{
