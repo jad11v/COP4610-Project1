@@ -118,7 +118,20 @@ void handleCommand(Args* response)
 	}
 	else if (strcmp(response->argv[0], "ioacct") == 0)
 	{
+		int pid = getpid();
+		int n;
+		char proc_file_name[100];
+		char char_pid[50];
 
+		strncpy(proc_file_name, "/proc/", sizeof(proc_file_name));
+		n = sprintf(char_pid, "%d", pid); // convert pid int to string, return size of new string
+		strncat(proc_file_name, char_pid, n); // create filename /proc/pid/
+		strncat(proc_file_name, "/io", sizeof(proc_file_name)); // create filename /proc/pid/io
+		//printf("%s\n", proc_file_name);
+
+		FILE* proc_file = fopen(proc_file_name, "r"); // open the proc file for reading
+
+		fclose(proc_file); // close the file
 	}
 	else
 	{
