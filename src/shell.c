@@ -7,6 +7,7 @@ typedef struct
 {
 	int argc;
 	char* argv[128];
+	char old_working_directory[256];
 } Args;
 
 void handleCommand(Args*);
@@ -73,9 +74,9 @@ void handleCommand(Args* response)
 		{
 			chdir(getenv("HOME")); // go to home directory
 		}
-		else if (strcmp(response->argv[0], "-") == 0)
+		else if (strcmp(response->argv[1], "-") == 0)
 		{
-			// go to previous working directory
+			// go to previous working directory and print its path
 		}
 		else
 		{
