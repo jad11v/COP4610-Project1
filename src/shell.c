@@ -1,3 +1,4 @@
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +8,9 @@ typedef struct
 {
 	int argc;
 	char* argv[128];
-	char old_working_directory[256];
 } Args;
+
+char previous_working_directory[256];
 
 void handleCommand(Args*);
 void shell();
@@ -23,6 +25,7 @@ int main(int argc, char* argv[])
 void shell()
 {
 	Args* input;
+	getcwd(previous_working_directory, 256);
 	while (1)
 	{
 		input = getUserInput();
@@ -79,13 +82,29 @@ void handleCommand(Args* response)
 	else if (strcmp(response->argv[0], "cd") == 0)
 	{
 		int return_value = 0;
+		char previous_working_directory_copy[256];
+		strncpy(previous_working_directory_copy, previous_working_directory, 256); // copy over previous working directory before overwriting it
+		getcwd(previous_working_directory, 256); // keep track (in global variable) of working directory before change
 		if (response->argv[1] == NULL)
 		{
 			return_value = chdir(getenv("HOME")); // go to home directory
 		}
+		else if (strcmp(response->argv[1], ".") == 0)
+		{
+			// do nothing, stay in current directory
+		}
+		else if (strcmp(response->argv[1], "..") == 0)
+		{
+			// go to parent directory
+			char working_directory[256];
+			getcwd(working_directory, 256);
+			return_value = chdir(dirname(working_directory));
+		}
 		else if (strcmp(response->argv[1], "-") == 0)
 		{
 			// go to previous working directory and print its path
+			return_value = chdir(previous_working_directory_copy);
+			printf("%s\n", previous_working_directory_copy);
 		}
 		else
 		{
@@ -96,6 +115,10 @@ void handleCommand(Args* response)
 		{
 			printf("Error: No such file or directory.\n");
 		}
+	}
+	else if (strcmp(response->argv[0], "ioacct") == 0)
+	{
+
 	}
 	else
 	{
