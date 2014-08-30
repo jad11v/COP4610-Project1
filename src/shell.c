@@ -78,9 +78,10 @@ void handleCommand(Args* response)
 	}
 	else if (strcmp(response->argv[0], "cd") == 0)
 	{
+		int return_value = 0;
 		if (response->argv[1] == NULL)
 		{
-			chdir(getenv("HOME")); // go to home directory
+			return_value = chdir(getenv("HOME")); // go to home directory
 		}
 		else if (strcmp(response->argv[1], "-") == 0)
 		{
@@ -88,7 +89,12 @@ void handleCommand(Args* response)
 		}
 		else
 		{
-			chdir(response->argv[1]); // go to specified directory
+			return_value = chdir(response->argv[1]); // go to specified directory
+		}
+
+		if (return_value == -1)
+		{
+			printf("Error: No such file or directory.\n");
 		}
 	}
 	else
