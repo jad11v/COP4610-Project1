@@ -65,6 +65,25 @@ void handleCommand(Args* response)
 {
 	if (strcmp(response->argv[0], "exit") == 0)
 	{
-		exit(EXIT_SUCCESS);
+		exit(55);
+	}
+	else if (strcmp(response->argv[0], "cd") == 0)
+	{
+		if (response->argv[1] == NULL)
+		{
+			chdir(getenv("HOME")); // go to home directory
+		}
+		else if (strcmp(response->argv[0], "-") == 0)
+		{
+			// go to previous working directory
+		}
+		else
+		{
+			chdir(response->argv[1]); // go to specified directory
+		}
+	}
+	else
+	{
+
 	}
 }
