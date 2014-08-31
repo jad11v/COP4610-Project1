@@ -85,7 +85,7 @@ void handleCommand(Args* response)
 		char previous_working_directory_copy[256];
 		strncpy(previous_working_directory_copy, previous_working_directory, 256); // copy over previous working directory before overwriting it
 		getcwd(previous_working_directory, 256); // keep track (in global variable) of working directory before change
-		if (response->argv[1] == NULL)
+		if (response->argv[1] == NULL || strcmp(response->argv[1], "~/") == 0 )
 		{
 			return_value = chdir(getenv("HOME")); // go to home directory
 		}
@@ -135,6 +135,5 @@ void handleCommand(Args* response)
 	}
 	else
 	{
-
 	}
 }
