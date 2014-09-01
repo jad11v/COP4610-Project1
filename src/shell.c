@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 typedef struct
@@ -121,19 +122,31 @@ void handleCommand(Args* response)
 		int pid = getpid();
 		int n;
 		char proc_file_name[100];
-		char char_pid[50];
 
-		strncpy(proc_file_name, "/proc/", sizeof(proc_file_name));
-		n = sprintf(char_pid, "%d", pid); // convert pid int to string, return size of new string
-		strncat(proc_file_name, char_pid, n); // create filename /proc/pid/
-		strncat(proc_file_name, "/io", sizeof(proc_file_name)); // create filename /proc/pid/io
-		//printf("%s\n", proc_file_name);
-
+		sprintf(proc_file_name, "/proc/%d/io", pid); // create filename /proc/pid/io
 		FILE* proc_file = fopen(proc_file_name, "r"); // open the proc file for reading
+
+		// read "read_bytes" and "write_bytes"
 
 		fclose(proc_file); // close the file
 	}
-	else
+	else // other commands like ls, rm, cat, etc.
 	{
+        int pid = fork();
+        if(pid == 0) 
+        {
+        	char full_command_path[100];
+        	sprintf(full_command_path, "/bin/%s", response->argv[0]); // create full path, e.g. /bin/ls
+            if(execv(full_command_path, response->argv)) 
+            {
+                printf("%s: Command not found.", response->argv[0]);
+            }
+
+            exit(0);
+        }
+        else 
+        {
+            wait(&pid);
+        }
 	}
 }
