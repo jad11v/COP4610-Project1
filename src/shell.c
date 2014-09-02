@@ -152,13 +152,12 @@ void handleCommand(Args* response)
 		{
         	char full_command_path[100];
 			sprintf(full_command_path, "/bin/%s", response->argv[0]); // create full path, e.g. /bin/ls
-        	printf("Full: %s\n", full_command_path);
             if (execv(full_command_path, response->argv)) 
             {
                 printf("%s: Command not found.\n", response->argv[0]);
             }
 
-            	exit(0);
+            exit(0);
         }
         else 
         {
