@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 typedef struct
@@ -30,6 +31,7 @@ void shell()
 	while (1)
 	{
 		input = getUserInput();
+
 		handleCommand(input);
 
 		// clear input
@@ -49,7 +51,6 @@ Args* getUserInput()
 	char hostname[256];
 	char working_directory[256];
 	char* tok_response;
-	int i;
 	args->argc = 0;
 	gethostname(hostname, 256);
 	getcwd(working_directory, 256);
@@ -120,33 +121,48 @@ void handleCommand(Args* response)
 	else if (strcmp(response->argv[0], "ioacct") == 0)
 	{
 		int pid = getpid();
-		int n;
 		char proc_file_name[100];
+		char io_info[50];
+		int io_value;
 
 		sprintf(proc_file_name, "/proc/%d/io", pid); // create filename /proc/pid/io
 		FILE* proc_file = fopen(proc_file_name, "r"); // open the proc file for reading
+		
+		// execute command as normal
 
-		// read "read_bytes" and "write_bytes"
+		// then read "read_bytes" and "write_bytes" and write values out
+		while (fscanf(proc_file, "%s %d", io_info, &io_value) != EOF)
+		{
+			if (strcmp(io_info, "read_bytes:") == 0)
+			{
+				printf("bytes read: %d\n", io_value);
+			}
+			else if (strcmp(io_info, "write_bytes:") == 0)
+			{
+				printf("bytes written: %d\n", io_value);
+			}
+		}
 
 		fclose(proc_file); // close the file
 	}
 	else // other commands like ls, rm, cat, etc.
 	{
         int pid = fork();
-        if(pid == 0) 
-        {
+        if (pid == 0) 
+		{
         	char full_command_path[100];
-        	sprintf(full_command_path, "/bin/%s", response->argv[0]); // create full path, e.g. /bin/ls
-            if(execv(full_command_path, response->argv)) 
+			sprintf(full_command_path, "/bin/%s", response->argv[0]); // create full path, e.g. /bin/ls
+        	printf("Full: %s\n", full_command_path);
+            if (execv(full_command_path, response->argv)) 
             {
-                printf("%s: Command not found.", response->argv[0]);
+                printf("%s: Command not found.\n", response->argv[0]);
             }
 
-            exit(0);
+            	exit(0);
         }
         else 
         {
-            wait(&pid);
+       		wait(&pid);
         }
 	}
 }
