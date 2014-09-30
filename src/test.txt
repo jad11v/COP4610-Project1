@@ -1,0 +1,27 @@
+ls | grep shell.c | cat
+
+argc: 6
+
+First Iteration: nothing happens(ls).
+	prev_pipe_pos = -1
+	i = 0
+
+Second Iteration: pipe
+	i = 1;
+	leftargCount = 1
+	j = 0
+	prev_pipe_pos = 1
+	fout = new file descriptor (not negative 1)
+	handlecommand(ls, 1)
+
+Third Iteration: grep 
+	i = 2;
+
+Fourth Iteration: shell.c
+
+	i = 3;
+
+Fifth Iteration: pipe
+	i = 4;
+	leftArgCount = i - prev_pipe_pos -1  (4 - 1 -1)
+	leftArgCOunt = 2 
